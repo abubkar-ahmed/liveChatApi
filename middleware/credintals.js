@@ -1,4 +1,4 @@
-const allowedOrigns = require('../config/allowedOrigns');
+const allowedOrigns = require('../config/aloowedOrigns');
 
 const creditals = (req , res , next) => {
     const origin = req.headers.origin;
