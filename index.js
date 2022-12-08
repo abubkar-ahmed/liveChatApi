@@ -28,6 +28,8 @@ let currentUser ;
 
 connectDB();
 
+app.use('/public/images', express.static("public/images"));
+
 app.use(credintials);
 
 app.use(cors(corsOptions));
@@ -39,7 +41,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-app.use('/public/images', express.static("public/images"));
+
 
 
 
