@@ -1,6 +1,6 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
-const Online = require('./model/Online');
+const Online = require('../model/Online');
 const moment = require('moment');
 
 
