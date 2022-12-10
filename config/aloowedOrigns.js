@@ -1,5 +1,5 @@
 const allowedOrigns = [
-    "https://abubkar-ahmed.github.io/liveChat",
+    "https://abubkar-ahmed.github.io",
 ]
 
 module.exports = allowedOrigns ;
