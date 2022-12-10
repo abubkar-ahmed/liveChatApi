@@ -23,7 +23,7 @@ const handleRefreshToken = async (req , res) => {
                 id : foundUser._id,
                 username : foundUser.username,
                 fullname : foundUser.fullName,
-                image : foundUser.image,
+                image : foundUser.userImgPath,
                 email : foundUser.email,
                 friendsList : foundUser.friendsList,
                 accessToken : accessToken

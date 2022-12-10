@@ -34,7 +34,7 @@ const getYourFriends = async (req , res) => {
                 id : friend?._id,
                 username : friend?.username ,
                 fullname : friend?.fullName ,
-                image : friend?.image,
+                image : friend?.userImgPath,
                 email : friend?.email,
                 room : currentUserDB.friendsList[i].room
             }
@@ -44,7 +44,7 @@ const getYourFriends = async (req , res) => {
                 id : friend._id,
                 username : friend.username ,
                 fullname : friend.fullName ,
-                image : friend.image
+                image : friend.userImgPath
             }
             requestArr.push(resFriend);
         } else if(currentUserDB.friendsList[i]?.status === 1){
@@ -52,13 +52,12 @@ const getYourFriends = async (req , res) => {
                 id : friend._id,
                 username : friend.username ,
                 fullname : friend.fullName ,
-                image : friend.image
+                image : friend.userImgPath
             }
             waitingArr.push(resFriend);
         }
 
     }
-    // console.log(currentUserDB.friendsList)
     res.json({frindArr , waitingArr , requestArr})
 
 }

@@ -34,7 +34,7 @@ const handleLogin = async (req , res) => {
             id : result._id,
             username : result.username,
             fullname : result.fullName,
-            image : result.image,
+            image : result.userImgPath,
             email : result.email,
             friendsList : result.friendsList,
             accessToken : accessToken

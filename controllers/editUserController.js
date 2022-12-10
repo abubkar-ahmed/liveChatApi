@@ -1,8 +1,5 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
-const fsPromises = require('fs').promises;
-const fs = require('fs');
-const path = require('path');
 const jwt = require('jsonwebtoken');
 
 
@@ -26,12 +23,9 @@ const handleEditUser = async (req , res) => {
     getLoggedInUserInfo(req,res);
     const currentUserDB = await User.findOne({ username : currentUser }).exec();
 
-    
-    // console.log(req.files)
 
     const {newName , type , newPwd} = req.body;
 
-    // console.log(type)
     if(!type) return res.sendStatus(400);
 
     if(type === 'name'){
@@ -50,7 +44,7 @@ const handleEditUser = async (req , res) => {
             id : result._id,
             username : result.username,
             fullname : result.fullName,
-            image : result.image,
+            image : result.userImgPath,
             email : result.email,
             friendsList : result.friendsList,
             accessToken : accessToken
@@ -73,44 +67,27 @@ const handleEditUser = async (req , res) => {
         res.status(401).json({"message" : 'Bad Caredials'})
         }
     }else if (type === 'img-update'){
-        try {
-            let imgName ;
-            if(req.files) {
-                const file = req.files.img
-                const fileName = file.name
-                const filemimeArr = file.mimetype.split('/');
+        if(req?.files?.img){
+            try{
+                const acceptedType = ['image/png', 'image/jpg', 'image/jpeg' , 'image/webp'] ;
+                if(!acceptedType.includes(req?.files?.img?.mimetype)) return res.status(409).json({
+                    'message' : 'invalied Image Type'
+                })
                 
-                
-                if(filemimeArr[0] === 'image'){
-                    const fileNameArr = fileName.split('.');
-                    const ext = fileNameArr[fileNameArr.length - 1];
-                    imgName = `${currentUserDB.username}.${ext}` ;
-
-                    if(fs.existsSync(`./public/images/${imgName}`)){
-                        await fsPromises.unlink(`./public/images/${imgName}`, function(err){
-                            console.log(err)
-                            if(err) res.sendStatus(500) ;
-                        })
-                    }
-                    
-                    file.mv(`./public/images/${imgName}`, function (err) {
-                        if(err) {
-                            return res.sendStatus(500)            
-                        }
-                    })
-                    currentUserDB.image = `/public/images/${imgName}`;
-                    const result = await currentUserDB.save();
-                    
-                    res.sendStatus(201);
-                }else {
-                   return res.status(400).json({'message' : 'Please Add An Image'}) ;
+                saveImage(currentUserDB, req.files.img);
+                function saveImage(currentUserDB, imgEncoded) {
+                    const img = imgEncoded;
+                    currentUserDB.img = new Buffer.from(img.data, "base64");
+                    currentUserDB.imgType = img.mimetype;
                 }
-                
+                await currentUserDB.save() ;
+                res.sendStatus(201) ;
+            } catch(err) {
+                console.log(err);
+                res.sendStatus(500);
                 
             }
 
-        }catch (err){
-            console.log(err);
         }
     }    
 }

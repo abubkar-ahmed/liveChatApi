@@ -1,14 +1,12 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
-const fs = require('fs');
-const path = require('path');
+
 
 
 
 
 
 const handleNewUser = async (req , res ) => {
-    
 
     const {fullname , user ,email , pwd , rPwd} = req.body ;
 
@@ -31,44 +29,37 @@ const handleNewUser = async (req , res ) => {
     })
 
     try{
-        let imgName ;
-        if(req.files) {
-            const file = req.files.img
-            const fileName = file.name
-            const filemimeArr = file.mimetype.split('/');
+        const newUser = new User({});
+        if(req?.files?.img){
+            const acceptedType = ['image/png', 'image/jpg', 'image/jpeg' , 'image/webp'] ;
+            if(!acceptedType.includes(req?.files?.img?.mimetype)) return res.status(409).json({
+                'message' : 'invalied Image Type'
+            })
             
-            
-            if(filemimeArr[0] === 'image'){
-                const fileNameArr = fileName.split('.');
-                const ext = fileNameArr[fileNameArr.length - 1];
-                imgName = `${user}.${ext}` ;
-                
-                file.mv(`./public/images/${imgName}`, function (err) {
-                    if(err) {
-                        return res.sendStatus(500)            
-                    }
-                })
-            }else {
-               return res.status(400).json({'message' : 'Please Add An Image'}) ;
+            saveImage(newUser, req.files.img);
+            function saveImage(newUser, imgEncoded) {
+                const img = imgEncoded;
+                newUser.img = new Buffer.from(img.data, "base64");
+                newUser.imgType = img.mimetype;
             }
-            
-            
-        }else {
-            imgName = 'defualt.png' ;
         }
+
+
         const hashPassword = await bcrypt.hash(pwd , 10);
-        const result = await User.create({
-            'image' : `/public/images/${imgName}`,
-            'fullName' : fullname,
-            'username' : user,
-            'email' : email,
-            'password' : hashPassword
-        });
+
+        newUser.fullName = fullname;
+        newUser.username = user;
+        newUser.email = email ;
+        newUser.password = hashPassword
+
+        const result = await newUser.save();
         res.status(201).json({'success' : `New User ${user} Created`})
-    }catch (err) {
-        console.log(err)
-        res.status(500).json({'message' : `${err}`});
-    }
+      }catch (err){
+        console.log(err); 
+        res.status(500).json({'message' : `${err}`});   
+      }
+
+
 }
 
 

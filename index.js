@@ -14,11 +14,14 @@ const jwt = require('jsonwebtoken');
 const User = require('./model/User');
 const Chat = require('./model/Chat');
 const Online = require('./model/Online');
-const moment = require('moment')
+const moment = require('moment');
+
+const multer = require('multer');
+const GridFsStorage = require('multer-gridfs-storage');
 
 const http = require("http");
 const {Server} = require("socket.io");
-const { callbackify } = require('util');
+// const { callbackify } = require('util');
 
 
 const PORT = process.env.PORT || 3500 ;
@@ -27,8 +30,6 @@ const PORT2 = process.env.PORT || 3001 ;
 let currentUser ;
 
 connectDB();
-
-app.use('/public/images', express.static("public/images"));
 
 app.use(credintials);
 
@@ -41,17 +42,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-
-
-
-
-// const server = http.createServer(app);
-
-
-
-
-
-
+app.use('/public/images', express.static("public/images"));
 
 
 
@@ -293,12 +284,12 @@ io.on("connection", async (socket) => {
 
             const unread = await Chat.findOne({for : user , chatRoom : data.room}).exec();
 
-            if(unread.unreadMsg){
+            if(unread?.unreadMsg){
                 unread.unreadMsg = [] ;
                 const result = await unread.save();
             }
 
-            socket.emit('unreadMsg' , await getUnreafMsg(socket?.   handshake?.auth?.user).then(res => {
+            socket.emit('unreadMsg' , await getUnreafMsg(socket?.handshake?.auth?.user).then(res => {
                 return res
                 }).catch(err => {
                 console.log(err)

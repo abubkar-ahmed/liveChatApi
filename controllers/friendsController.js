@@ -23,7 +23,6 @@ const updatingList = async (user , currentUserDB) => {
     const users = await User.find({ username : searchUser}).exec();
     
     const userNames = users.map(friend => {
-        // console.log(friend.friendsList);
         let status 
         
         const ab = friend.friendsList.map((e) => {
@@ -41,7 +40,7 @@ const updatingList = async (user , currentUserDB) => {
             return {
                 username : friend.username ,
                 id : friend._id,
-                image : friend.image,
+                image : friend.userImgPath,
                 fullname : friend.fullName,
                 status : status
             }
@@ -49,7 +48,7 @@ const updatingList = async (user , currentUserDB) => {
             return {
                 username : friend.username ,
                 id : friend._id,
-                image : friend.image,
+                image : friend.userImgPath,
                 fullname : friend.fullName
             }
         }
