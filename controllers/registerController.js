@@ -58,9 +58,9 @@ const handleNewUser = async (req , res ) => {
 
         const onlineStatus = await Online.create({
             username : user,
-            lastSeen : `${moment().month() + 1}/${moment().date()} ${hour()}:${min()}`            
+            lastSeen : getCurrentDate()           
         }) ; 
-        
+
         res.status(201).json({'success' : `New User ${user} Created`})
       }catch (err){
         console.log(err); 
@@ -69,6 +69,27 @@ const handleNewUser = async (req , res ) => {
 
 
 }
+
+const getCurrentDate = () => {
+    const hour = () => {
+      let h = moment().hour();
+        if(h >= 0 && h <= 9){
+          h = `0${h}`;
+        }
+        return h ;
+    }
+
+    const min = () => {
+      let m = moment().minute();
+      if(m >= 0 && m <= 9){
+        m = `0${m}`;
+      }
+      return m ;
+    }
+    const date = `${moment().month() + 1}/${moment().date()} ${hour()}:${min()}`
+
+    return date ;
+  }
 
 
 module.exports = {handleNewUser}
