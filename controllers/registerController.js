@@ -1,5 +1,7 @@
 const User = require('../model/User');
 const bcrypt = require('bcrypt');
+const Online = require('./model/Online');
+const moment = require('moment');
 
 
 
@@ -53,6 +55,12 @@ const handleNewUser = async (req , res ) => {
         newUser.password = hashPassword
 
         const result = await newUser.save();
+
+        const onlineStatus = await Online.create({
+            username : user,
+            lastSeen : `${moment().month() + 1}/${moment().date()} ${hour()}:${min()}`            
+        }) ; 
+        
         res.status(201).json({'success' : `New User ${user} Created`})
       }catch (err){
         console.log(err); 
